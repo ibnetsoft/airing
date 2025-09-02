@@ -370,13 +370,13 @@ const Header = ()=>{
                                         " custom software development, product design, QA and consultancy services."
                                     ]
                                 }),
-                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx((next_link__WEBPACK_IMPORTED_MODULE_1___default()), {
-                                    href: "/page-about-5",
-                                    children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("a", {
-                                        className: "btn sm-butn border text-white radius-9 mt-60 hover-darkBlue",
-                                        children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("span", {
-                                            children: "More About Us"
-                                        })
+                                /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("a", {
+                                    href: "https://github.com/ibnetsoft/airing/raw/main/AIRING_Token_Whitepaper.pdf",
+                                    target: "_blank",
+                                    rel: "noopener noreferrer",
+                                    className: "btn sm-butn border text-white radius-9 mt-60 hover-darkBlue",
+                                    children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("span", {
+                                        children: "White Paper"
                                     })
                                 })
                             ]
