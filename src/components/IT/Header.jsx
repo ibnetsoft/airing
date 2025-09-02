@@ -37,11 +37,9 @@ const Header = () => {
               <p className="d-block mt-40">
                 AIRING Co is the partner of choice for many of the world's leading <br /> enterprises, SMEs and technology challengers. We help businesses elevate their value through <br /> custom software development, product design, QA and consultancy services.
               </p>
-              <Link href="/page-about-5">
-                <a className="btn sm-butn border text-white radius-9 mt-60 hover-darkBlue">
-                  <span>More About Us</span>
-                </a>
-              </Link>
+              <a href="https://github.com/ibnetsoft/airing/raw/main/AIRING_Token_Whitepaper.pdf" target="_blank" rel="noopener noreferrer" className="btn sm-butn border text-white radius-9 mt-60 hover-darkBlue">
+                <span>White Paper</span>
+              </a>
             </div>
           </div>
         </div>
