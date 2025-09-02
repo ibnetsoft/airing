@@ -1,0 +1,14 @@
+"use strict";
+exports.id = 9153;
+exports.ids = [9153];
+exports.modules = {
+
+/***/ 9153:
+/***/ ((module) => {
+
+module.exports = JSON.parse('{"features":[{"icon":"fas fa-tag","title":"Filtering notes using matched keywords"},{"icon":"fas fa-sync","title":"Automatically sync in real times"},{"icon":"fas fa-text-width","title":"Complete note editor with rich text options"}],"accordions":[{"id":1,"title":"Create and Save your notes with multi-media","content":"Images, videos, PDFs and audio files are supported. Create math expressions and diagrams directly from the app. Take photos with the mobile app and save them to a note."},{"id":2,"title":"Web Clipper Extension","content":"Images, videos, PDFs and audio files are supported. Create math expressions and diagrams directly from the app. Take photos with the mobile app and save them to a note."},{"id":3,"title":"Protect your note with lock","content":"Images, videos, PDFs and audio files are supported. Create math expressions and diagrams directly from the app. Take photos with the mobile app and save them to a note."}],"thirdFeatures":[{"active":false,"title":"Filtering notes using matched keywords"},{"active":true,"title":"8 Beautiful themes for you select"},{"active":false,"title":"Save energy for your device"},{"active":false,"title":"Easy to switch between light and dark mode"}],"integrations":["/assets/img/about/intg1.png","/assets/img/about/intg5.png","/assets/img/about/intg4.png","/assets/img/about/intg3.png","/assets/img/about/intg2.png"]}');
+
+/***/ })
+
+};
+;

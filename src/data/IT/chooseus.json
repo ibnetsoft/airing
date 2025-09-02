@@ -1,0 +1,23 @@
+[
+  {
+    "image": "/assets/img/icons/ch1.png",
+    "title": "Affordable Price",
+    "desc": {
+      "desc1": "We use cutting-edge AI technology to predict",
+      "desc2": "and make decisions about the future."
+    }
+  },
+  {
+    "image": "/assets/img/icons/ch2.png",
+    "title": "Top-notch Experts Consulting",
+    "desc": {
+      "desc1": "Our top-notch Experts with much years of experience",
+      "desc2": "certail will give best solutions for your business."
+    }
+  },
+  {
+    "image": "/assets/img/icons/ch3.png",
+    "title": "Dedicated Support 24/7",
+    "desc": "AI is dedicated to customers 24/7."
+  }
+]
