@@ -11,7 +11,7 @@ const HomeITSolutions = () => {
   return (
     <>
       <Head>
-        <title>AIRING - IT Solutions</title>
+        <title>AIRING Blockchain</title>
       </Head>
 
       <MainLayout scrollTopText>
