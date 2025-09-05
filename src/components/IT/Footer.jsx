@@ -21,7 +21,7 @@ const Footer = () => {
               <a href="https://x.com/airingpro" target="_blank" rel="noopener noreferrer" className="icon-40 sm-butn btn border text-white rounded-circle hover-lightBlue border-lightBlue m-1 p-0 d-inline-flex align-items-center justify-content-center">
                 <i className="fab fa-twitter"></i>
               </a>
-              <a href="https://t.me/PipmakerSignal" target="_blank" rel="noopener noreferrer" className="icon-40 sm-butn btn border text-white rounded-circle hover-lightBlue border-lightBlue m-1 p-0 d-inline-flex align-items-center justify-content-center">
+              <a href="https://t.me/+WTKXYPDlbWpmYzY1" target="_blank" rel="noopener noreferrer" className="icon-40 sm-butn btn border text-white rounded-circle hover-lightBlue border-lightBlue m-1 p-0 d-inline-flex align-items-center justify-content-center">
                 <i className="fab fa-telegram-plane"></i>
               </a>
             </div>
