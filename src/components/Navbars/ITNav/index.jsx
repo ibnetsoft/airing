@@ -39,6 +39,16 @@ const Navbar = () => {
         </button>
         <div className="collapse navbar-collapse" id="navbarSupportedContent">
           <ul className="navbar-nav m-auto mb-2 mb-lg-0 text-uppercase">
+            <li className="nav-item">
+              <Link href="/">
+                <a className="nav-link">Home</a>
+              </Link>
+            </li>
+            <li className="nav-item">
+              <Link href="/page-pnl-analysis">
+                <a className="nav-link">P&L Analysis</a>
+              </Link>
+            </li>
           </ul>
         </div>
       </div>

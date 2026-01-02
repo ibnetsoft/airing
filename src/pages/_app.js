@@ -3,6 +3,7 @@ import Script from "next/script";
 import Head from "next/head";
 import "../styles/preloader.css";
 import "../styles/globals.css";
+import "../styles/pnl-dashboard.css";
 
 function MyApp({ Component, pageProps }) {
   return (
