@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react';
+import { processPnlForCharts } from '../../common/bybitService';
 
 const PnlChartCard = ({ title, data, dataKey, color }) => {
     const chartRef = useRef(null);
@@ -10,13 +11,28 @@ const PnlChartCard = ({ title, data, dataKey, color }) => {
                 chartInstance.current.destroy();
             }
 
+            const processed = processPnlForCharts(data);
+
+            if (processed.length === 0) {
+                return;
+            }
+
             const ctx = chartRef.current.getContext('2d');
-            const labels = data.map(item => new Date(parseInt(item.updatedTime)).toLocaleDateString());
-            const values = data.map(item => {
-                if (dataKey === 'pnlPercent') return (parseFloat(item.closedPnl) / 100); // Dummy calculation
-                if (dataKey === 'assetTrend') return 6000 + parseFloat(item.cumulativePnl); // Dummy trend
+            const labels = processed.map(item => item.date);
+            const values = processed.map(item => {
+                if (dataKey === 'pnlPercent') {
+                    // Semi-mocked ROI calculation for visualization
+                    return (parseFloat(item.closedPnl) / 10).toFixed(2);
+                }
+                if (dataKey === 'assetTrend') {
+                    return parseFloat(item.cumulativePnl);
+                }
                 return parseFloat(item[dataKey]);
             });
+
+            const gradient = ctx.createLinearGradient(0, 0, 0, 300);
+            gradient.addColorStop(0, `${color}40`);
+            gradient.addColorStop(1, `${color}00`);
 
             chartInstance.current = new window.Chart(ctx, {
                 type: 'line',
@@ -26,27 +42,44 @@ const PnlChartCard = ({ title, data, dataKey, color }) => {
                         label: title,
                         data: values,
                         borderColor: color,
-                        backgroundColor: `${color}20`,
+                        backgroundColor: gradient,
                         borderWidth: 2,
                         pointRadius: 0,
                         fill: true,
-                        tension: 0.4
+                        tension: 0.3
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    interaction: {
+                        intersect: false,
+                        mode: 'index',
+                    },
                     plugins: {
-                        legend: { display: false }
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: '#161b22',
+                            titleColor: '#8b949e',
+                            bodyColor: '#fff',
+                            borderColor: '#30363d',
+                            borderWidth: 1,
+                            padding: 10,
+                            displayColors: false
+                        }
                     },
                     scales: {
                         x: {
-                            grid: { color: '#30363d' },
-                            ticks: { color: '#8b949e', maxTicksLimit: 6 }
+                            grid: { display: false },
+                            ticks: { color: '#8b949e', maxTicksLimit: 7, font: { size: 10 } }
                         },
                         y: {
-                            grid: { color: '#30363d' },
-                            ticks: { color: '#8b949e' }
+                            grid: { color: 'rgba(48, 54, 61, 0.2)', drawBorder: false },
+                            ticks: {
+                                color: '#8b949e',
+                                font: { size: 10 },
+                                callback: (val) => val.toLocaleString()
+                            }
                         }
                     }
                 }
@@ -56,9 +89,15 @@ const PnlChartCard = ({ title, data, dataKey, color }) => {
 
     return (
         <div className="pnl-card">
-            <h6 className="mb-3">{title}</h6>
+            <h6 className="mb-4 text-white-50 fw-normal" style={{ fontSize: '14px' }}>{title}</h6>
             <div className="pnl-chart-container">
-                <canvas ref={chartRef}></canvas>
+                {data.length === 0 ? (
+                    <div className="d-flex align-items-center justify-content-center h-100 text-muted small">
+                        No data available for this period
+                    </div>
+                ) : (
+                    <canvas ref={chartRef}></canvas>
+                )}
             </div>
         </div>
     );

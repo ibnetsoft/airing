@@ -54,20 +54,50 @@ const authenticatedFetch = async (endpoint, params = {}) => {
 };
 
 /**
- * Get Closed PnL history
+ * Get Closed PnL history with proper startTime calculation
  */
-export const getClosedPnl = async (params) => {
-  if (isMock) return getMockPnlData(params);
-  return authenticatedFetch('/v5/position/closed-pnl', { category: 'linear', ...params });
+export const getClosedPnl = async (timeRangeDays = 30) => {
+  if (isMock) return getMockPnlData({ limit: timeRangeDays });
+
+  const now = Date.now();
+  const startTime = now - (timeRangeDays * 24 * 60 * 60 * 1000);
+
+  // Bybit V5 closed-pnl supports limit up to 100 per page. 
+  // For longer ranges, pagination would be needed, but we'll start with 100.
+  return authenticatedFetch('/v5/position/closed-pnl', {
+    category: 'linear',
+    startTime,
+    limit: 100
+  });
 };
 
 /**
  * Get Wallet Balance
  */
-export const getWalletBalance = async (params) => {
+export const getWalletBalance = async () => {
   if (isMock) return getMockWalletBalance();
-  return authenticatedFetch('/v5/account/wallet-balance', { accountType: 'UNIFIED', ...params });
+  return authenticatedFetch('/v5/account/wallet-balance', { accountType: 'UNIFIED' });
 };
 
-// --- Mock Data Generators (kept for fallback or testing) ---
-// ... (rest of the mock functions if needed)
+/**
+ * Helper to process P&L data for charts
+ */
+export const processPnlForCharts = (list) => {
+  if (!list || list.length === 0) return [];
+
+  // Bybit returns list in reverse chronological order (newest first)
+  // We want chronological for the chart
+  const sortedList = [...list].sort((a, b) => parseInt(a.updatedTime) - parseInt(b.updatedTime));
+
+  let cumulative = 0;
+  return sortedList.map(item => {
+    const pnl = parseFloat(item.closedPnl);
+    cumulative += pnl;
+    return {
+      ...item,
+      pnlValue: pnl,
+      cumulativePnl: cumulative,
+      date: new Date(parseInt(item.updatedTime)).toLocaleDateString()
+    };
+  });
+};

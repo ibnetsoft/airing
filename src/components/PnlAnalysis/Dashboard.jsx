@@ -15,11 +15,17 @@ const Dashboard = () => {
             setLoading(true);
             try {
                 const [pnlRes, walletRes] = await Promise.all([
-                    getClosedPnl({ limit: timeRange }),
+                    getClosedPnl(timeRange),
                     getWalletBalance()
                 ]);
-                setPnlData(pnlRes.result.list);
-                setWallet(walletRes.result.list[0]);
+
+                if (pnlRes.retCode === 0) {
+                    setPnlData(pnlRes.result.list || []);
+                }
+
+                if (walletRes.retCode === 0 && walletRes.result.list && walletRes.result.list.length > 0) {
+                    setWallet(walletRes.result.list[0]);
+                }
             } catch (error) {
                 console.error("Failed to fetch dashboard data", error);
             } finally {
@@ -31,13 +37,32 @@ const Dashboard = () => {
 
     if (loading) return <div className="text-center py-5">Loading Dashboard...</div>;
 
+    const calculateMetrics = () => {
+        let total = 0;
+        let today = 0;
+        const now = new Date();
+        const todayStr = now.toDateString();
+
+        pnlData.forEach(item => {
+            const pnl = parseFloat(item.closedPnl);
+            total += pnl;
+            if (new Date(parseInt(item.updatedTime)).toDateString() === todayStr) {
+                today += pnl;
+            }
+        });
+        return { total, today };
+    };
+
+    const metrics = calculateMetrics();
+
     return (
         <div className="pnl-dashboard">
             <div className="pnl-container">
                 <PnlHeader
-                    todayPnl={311.01}
-                    historicalPnl={3982.54}
+                    todayPnl={metrics.today}
+                    historicalPnl={metrics.total}
                     totalAsset={wallet?.totalEquity || 0}
+                    walletCoins={wallet?.coin || []}
                 />
 
                 <div className="time-filters">
@@ -57,12 +82,12 @@ const Dashboard = () => {
                         title="Cumulative P&L (USD)"
                         data={pnlData}
                         dataKey="cumulativePnl"
-                        color="#388bfd"
+                        color="#00c0ff"
                     />
                     <PnlChartCard
                         title="Cumulative P&L (%)"
                         data={pnlData}
-                        dataKey="pnlPercent" // We'll calculate this or mock it
+                        dataKey="pnlPercent"
                         color="#23d160"
                     />
                     <div className="pnl-card">
