@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getClosedPnl, getWalletBalance } from '../../common/bybitService';
+import { getClosedPnl, getWalletBalance, processPnlForCharts } from '../../common/bybitService';
 import PnlHeader from './PnlHeader';
 import PnlChartCard from './PnlChartCard';
 import PnlCalendar from './PnlCalendar';
@@ -42,6 +42,8 @@ const Dashboard = () => {
         </div>
     );
 
+    const processedData = processPnlForCharts(pnlData, wallet?.totalEquity || 0);
+
     const calculateMetrics = () => {
         let total = 0;
         let today = 0;
@@ -82,18 +84,22 @@ const Dashboard = () => {
                             </button>
                         ))}
                     </div>
+                    <div className="ms-auto d-flex align-items-center">
+                        <span className="badge rounded-pill bg-success me-2" style={{ padding: '6px 12px', fontSize: '11px', opacity: 0.8 }}>● Live API</span>
+                        <span className="text-muted small">Updated {new Date().toLocaleTimeString()}</span>
+                    </div>
                 </div>
 
                 <div className="pnl-grid">
                     <PnlChartCard
                         title="Cumulative P&L (USD)"
-                        data={pnlData}
+                        data={processedData}
                         dataKey="cumulativePnl"
                         color="#00c0ff"
                     />
                     <PnlChartCard
                         title="Cumulative P&L (%)"
-                        data={pnlData}
+                        data={processedData}
                         dataKey="pnlPercent"
                         color="#23d160"
                     />
@@ -105,7 +111,7 @@ const Dashboard = () => {
 
                     <PnlChartCard
                         title="Total Asset Trend (USD)"
-                        data={pnlData}
+                        data={processedData}
                         dataKey="assetTrend"
                         color="#e3b341"
                     />

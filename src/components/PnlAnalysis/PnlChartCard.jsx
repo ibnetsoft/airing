@@ -1,5 +1,4 @@
 import React, { useEffect, useRef } from 'react';
-import { processPnlForCharts } from '../../common/bybitService';
 
 const PnlChartCard = ({ title, data, dataKey, color }) => {
     const chartRef = useRef(null);
@@ -11,17 +10,11 @@ const PnlChartCard = ({ title, data, dataKey, color }) => {
                 chartInstance.current.destroy();
             }
 
-            const processed = processPnlForCharts(data);
-
-            if (processed.length === 0) return;
+            if (!data || data.length === 0) return;
 
             const ctx = chartRef.current.getContext('2d');
-            const labels = processed.map(item => item.date);
-            const values = processed.map(item => {
-                if (dataKey === 'pnlPercent') return (parseFloat(item.closedPnl) / 10).toFixed(2);
-                if (dataKey === 'assetTrend') return parseFloat(item.cumulativePnl);
-                return parseFloat(item[dataKey]);
-            });
+            const labels = data.map(item => item.date);
+            const values = data.map(item => parseFloat(item[dataKey]));
 
             const gradient = ctx.createLinearGradient(0, 0, 0, 300);
             gradient.addColorStop(0, `${color}30`);
@@ -55,7 +48,15 @@ const PnlChartCard = ({ title, data, dataKey, color }) => {
                             borderColor: '#30363d',
                             borderWidth: 1,
                             padding: 12,
-                            displayColors: false
+                            displayColors: false,
+                            callbacks: {
+                                label: (context) => {
+                                    let label = context.dataset.label || '';
+                                    if (label) label += ': ';
+                                    if (dataKey === 'pnlPercent') return label + context.parsed.y + '%';
+                                    return label + context.parsed.y.toLocaleString();
+                                }
+                            }
                         }
                     },
                     scales: {
@@ -65,7 +66,14 @@ const PnlChartCard = ({ title, data, dataKey, color }) => {
                         },
                         y: {
                             grid: { color: 'rgba(48, 54, 61, 0.3)', drawBorder: false },
-                            ticks: { color: '#8b949e', font: { size: 10 } }
+                            ticks: {
+                                color: '#8b949e',
+                                font: { size: 10 },
+                                callback: (val) => {
+                                    if (dataKey === 'pnlPercent') return val + '%';
+                                    return val.toLocaleString();
+                                }
+                            }
                         }
                     }
                 }
@@ -77,9 +85,9 @@ const PnlChartCard = ({ title, data, dataKey, color }) => {
         <div className="pnl-glass-card">
             <div className="card-title">{title}</div>
             <div className="pnl-chart-wrapper">
-                {data.length === 0 ? (
+                {(!data || data.length === 0) ? (
                     <div className="d-flex align-items-center justify-content-center h-100 text-muted small">
-                        No data available for this period
+                        No transaction history found for this period
                     </div>
                 ) : (
                     <canvas ref={chartRef}></canvas>

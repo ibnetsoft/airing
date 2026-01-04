@@ -1,11 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 const PnlCalendar = ({ data }) => {
-    const now = new Date();
-    const currentYear = now.getFullYear();
-    const currentMonth = now.getMonth();
-    const todayDate = now.getDate();
+    const [viewDate, setViewDate] = useState(new Date()); // Date object representing the month we are viewing
 
+    const currentYear = viewDate.getFullYear();
+    const currentMonth = viewDate.getMonth();
+
+    const now = new Date();
+    const todayDate = now.getDate();
+    const isActualCurrentMonth = now.getFullYear() === currentYear && now.getMonth() === currentMonth;
+
+    // Filter data for the specific month/year being viewed
     const pnlMap = {};
     data.forEach(item => {
         const d = new Date(parseInt(item.updatedTime));
@@ -23,17 +28,46 @@ const PnlCalendar = ({ data }) => {
         days.push({
             day: i,
             pnl: pnlMap[i],
-            isFuture: i > todayDate && currentYear === now.getFullYear() && currentMonth === now.getMonth()
+            isFuture: isActualCurrentMonth && i > todayDate || (viewDate > now && !isActualCurrentMonth)
         });
     }
 
     const weekdays = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 
+    const changeMonth = (offset) => {
+        const newDate = new Date(currentYear, currentMonth + offset, 1);
+        setViewDate(newDate);
+    };
+
+    const monthNames = ["January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"
+    ];
+
     return (
         <div className="calendar-widget">
-            <div className="cal-header d-flex justify-content-between">
-                <span>{currentYear}.{String(currentMonth + 1).padStart(2, '0')}</span>
+            <div className="cal-header d-flex justify-content-between align-items-center mb-4">
+                <span style={{ fontSize: '18px', fontWeight: '700' }}>
+                    {monthNames[currentMonth]} {currentYear}
+                </span>
+                <div className="cal-nav d-flex gap-2">
+                    <button
+                        className="btn btn-sm btn-outline-secondary border-secondary text-white"
+                        style={{ padding: '2px 10px', fontSize: '12px' }}
+                        onClick={() => changeMonth(-1)}
+                    >
+                        &lt;
+                    </button>
+                    <button
+                        className="btn btn-sm btn-outline-secondary border-secondary text-white"
+                        style={{ padding: '2px 10px', fontSize: '12px' }}
+                        onClick={() => changeMonth(1)}
+                        disabled={viewDate >= new Date(now.getFullYear(), now.getMonth(), 1)}
+                    >
+                        &gt;
+                    </button>
+                </div>
             </div>
+
             <div className="pnl-calendar-grid">
                 {weekdays.map(d => <div key={d} className="cal-weekday">{d}</div>)}
                 {[...Array(firstDay)].map((_, i) => <div key={`empty-${i}`} className="cal-day empty"></div>)}
@@ -45,9 +79,18 @@ const PnlCalendar = ({ data }) => {
                                 {d.pnl > 0 ? `+${d.pnl.toFixed(0)}` : d.pnl.toFixed(0)}
                             </span>
                         )}
+                        {!d.isFuture && d.pnl === undefined && Object.keys(pnlMap).length > 0 && (
+                            <span className="d-pnl text-muted" style={{ fontSize: '9px', opacity: 0.5 }}>0</span>
+                        )}
                     </div>
                 ))}
             </div>
+
+            {Object.keys(pnlMap).length === 0 && (
+                <div className="text-center mt-3 small text-muted">
+                    No trade data found for this month in the current time range.
+                </div>
+            )}
         </div>
     );
 };

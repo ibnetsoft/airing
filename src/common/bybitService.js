@@ -85,24 +85,45 @@ export const getWalletBalance = async () => {
 };
 
 /**
- * Helper to process P&L data for charts
+ * Helper to process P&L data for charts with real mathematical derivation
  */
-export const processPnlForCharts = (list) => {
+export const processPnlForCharts = (list, currentEquity = 0) => {
   if (!list || list.length === 0) return [];
 
-  // Bybit returns list in reverse chronological order (newest first)
-  // We want chronological for the chart
+  // Sort list chronologically (oldest first)
   const sortedList = [...list].sort((a, b) => parseInt(a.updatedTime) - parseInt(b.updatedTime));
 
-  let cumulative = 0;
-  return sortedList.map(item => {
+  // 1. Calculate Cumulative P&L at each point
+  let cumulativePnl = 0;
+  const dataWithPnl = sortedList.map(item => {
     const pnl = parseFloat(item.closedPnl);
-    cumulative += pnl;
+    cumulativePnl += pnl;
     return {
       ...item,
       pnlValue: pnl,
-      cumulativePnl: cumulative,
+      cumulativePnl: cumulativePnl,
       date: new Date(parseInt(item.updatedTime)).toLocaleDateString()
+    };
+  });
+
+  // 2. Derive Equity Baseline
+  // Starting Equity = Current Equity - Total P&L of the fetched period
+  const totalPnlInPeriod = cumulativePnl;
+  const startingEquity = (parseFloat(currentEquity) || 0) - totalPnlInPeriod;
+
+  // 3. Final processing with ROI and Asset Trend
+  return dataWithPnl.map(item => {
+    // Equity at this point = startingEquity + cumulativePnl up to this point
+    const pointEquity = startingEquity + item.cumulativePnl;
+
+    // Calculate ROI % relative to the starting equity of the period
+    // Safely handle division by zero or very small equity
+    const roiPercent = startingEquity > 0 ? (item.cumulativePnl / startingEquity) * 100 : 0;
+
+    return {
+      ...item,
+      assetTrend: pointEquity,
+      pnlPercent: roiPercent.toFixed(2)
     };
   });
 };
