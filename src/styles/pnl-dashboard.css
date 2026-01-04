@@ -1,162 +1,223 @@
 .pnl-dashboard {
-  padding: 60px 0;
+  padding: 40px 0;
   color: #fff;
   background-color: #0d1117;
-  min-height: 100vh;
+  min-height: calc(100vh - 80px);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
 .pnl-container {
-  max-width: 1240px;
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 0 20px;
+  padding: 0 24px;
 }
 
-/* Summary Cards */
-.summary-card {
-  background: #161b22;
+/* Premium Header Section */
+.pnl-summary-banner {
+  background: linear-gradient(135deg, #161b22 0%, #1c2128 100%);
   border: 1px solid #30363d;
-  border-radius: 12px;
-  padding: 24px;
-  height: 100%;
-  transition: transform 0.2s;
-}
-
-.summary-card.highlight {
-  border-color: #00c0ff;
-  background: linear-gradient(145deg, #161b22 0%, #0d2a35 100%);
-}
-
-.summary-card .label {
-  font-size: 13px;
-  color: #8b949e;
-  margin-bottom: 12px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.summary-card .value {
-  font-size: 28px;
-  font-weight: 700;
+  border-radius: 16px;
+  padding: 32px;
+  margin-bottom: 32px;
   display: flex;
-  align-items: baseline;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 }
 
-.summary-card .percent {
-  font-size: 16px;
-  margin-left: 10px;
+.summary-group {
+  display: flex;
+  gap: 48px;
+}
+
+.summary-box .label {
+  font-size: 12px;
+  color: #8b949e;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 12px;
+  font-weight: 600;
+}
+
+.summary-box .value {
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.summary-box .sub-value {
+  font-size: 14px;
+  margin-top: 8px;
   font-weight: 500;
 }
 
-.summary-card .unit {
-  font-size: 14px;
-  color: #8b949e;
-  font-weight: normal;
+.asset-box {
+  text-align: right;
+  padding-left: 48px;
+  border-left: 1px solid #30363d;
 }
 
-.value-pos {
-  color: #00ff88;
-}
-
-.value-neg {
-  color: #ff3366;
-}
-
-/* Grid & Layout */
-.pnl-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 24px;
-  margin-top: 30px;
-}
-
-.pnl-card {
-  background: #161b22;
-  border: 1px solid #30363d;
-  border-radius: 12px;
-  padding: 24px;
-}
-
-.pnl-chart-container {
-  height: 320px;
-  position: relative;
+.asset-box .value {
+  color: #00c0ff;
+  font-size: 36px;
 }
 
 /* Time Filters */
-.time-filters {
+.pnl-controls {
   display: flex;
-  gap: 8px;
-  margin-top: 10px;
+  justify-content: flex-start;
+  margin-bottom: 24px;
 }
 
-.time-filter-btn {
-  background: #21262d;
+.filter-pills {
+  background: #161b22;
+  padding: 4px;
+  border-radius: 10px;
+  display: flex;
+  gap: 4px;
   border: 1px solid #30363d;
+}
+
+.filter-pill {
+  background: transparent;
+  border: none;
   color: #8b949e;
   padding: 8px 16px;
   border-radius: 8px;
   font-size: 13px;
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
-  font-weight: 500;
 }
 
-.time-filter-btn:hover {
-  background: #30363d;
+.filter-pill:hover {
   color: #fff;
 }
 
-.time-filter-btn.active {
-  background: #007bff;
-  border-color: #007bff;
-  color: #fff;
+.filter-pill.active {
+  background: #00c0ff;
+  color: #0d1117;
 }
 
-/* Calendar */
-.calendar-weekday {
-  text-align: center;
-  color: #8b949e;
-  font-size: 12px;
-  padding-bottom: 10px;
+/* Grid & Cards */
+.pnl-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 32px;
+}
+
+.pnl-glass-card {
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 16px;
+  padding: 24px;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.pnl-glass-card:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+.pnl-glass-card .card-title {
+  font-size: 16px;
   font-weight: 600;
+  color: #c9d1d9;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
-.pnl-calendar {
+.pnl-chart-wrapper {
+  height: 300px;
+  width: 100%;
+}
+
+/* Calendar Styling */
+.calendar-widget {
+  padding: 10px 0;
+}
+
+.cal-header {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  color: #fff;
+}
+
+.pnl-calendar-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 6px;
+  gap: 8px;
 }
 
-.calendar-day {
+.cal-weekday {
+  text-align: center;
+  font-size: 12px;
+  color: #8b949e;
+  font-weight: 700;
+  padding-bottom: 12px;
+}
+
+.cal-day {
   aspect-ratio: 1.2;
-  background: #21262d;
-  border-radius: 6px;
+  background: #1c2128;
+  border: 1px solid #30363d;
+  border-radius: 8px;
   padding: 8px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  border: 1px solid transparent;
 }
 
-.calendar-day.empty {
+.cal-day.empty {
   background: transparent;
+  border-color: transparent;
 }
 
-.calendar-day.future {
-  opacity: 0.3;
+.cal-day.future {
+  opacity: 0.2;
 }
 
-.calendar-day .day-num {
-  font-size: 11px;
+.cal-day .d-num {
+  font-size: 10px;
   color: #8b949e;
 }
 
-.calendar-day .day-pnl {
-  font-size: 11px;
+.cal-day .d-pnl {
+  font-size: 12px;
+  font-weight: 700;
   text-align: right;
-  font-weight: 600;
+}
+
+.val-up {
+  color: #00ff88;
+}
+
+.val-down {
+  color: #ff3366;
 }
 
 @media (max-width: 992px) {
+  .pnl-summary-banner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 24px;
+  }
+
+  .asset-box {
+    padding-left: 0;
+    border-left: none;
+    border-top: 1px solid #30363d;
+    padding-top: 24px;
+    width: 100%;
+    text-align: left;
+  }
+
+  .summary-group {
+    gap: 32px;
+  }
+
   .pnl-grid {
     grid-template-columns: 1fr;
   }

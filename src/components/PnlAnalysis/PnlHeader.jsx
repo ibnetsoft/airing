@@ -1,40 +1,46 @@
 import React from 'react';
 
 const PnlHeader = ({ todayPnl, historicalPnl, totalAsset, walletCoins }) => {
-    // Try to find USD balance, or use totalAsset if it's already in USD
+    // Determine primary asset unit
     const btcCoin = walletCoins?.find(c => c.coin === 'BTC');
-    const usdtCoin = walletCoins?.find(c => c.coin === 'USDT');
+    const mainUnit = btcCoin && parseFloat(btcCoin.equity) > 0 ? 'BTC' : 'USD';
+
+    // Percentages are hardcoded for now or could be calculated
+    const todayPercent = "+4.57%";
+    const historicalPercent = "+13.13%";
 
     return (
-        <div className="pnl-header-summary row g-4 mb-30">
-            <div className="col-lg-4 col-md-6">
-                <div className="summary-card">
-                    <div className="label">Today's P&L (USD)</div>
-                    <div className={`value ${todayPnl >= 0 ? 'value-pos' : 'value-neg'}`}>
-                        {todayPnl >= 0 ? '+' : ''}{todayPnl.toLocaleString()} <span className="percent">(+4.57%)</span>
+        <div className="pnl-summary-banner">
+            <div className="summary-group">
+                <div className="summary-box">
+                    <div className="label">Today's P&L</div>
+                    <div className={`value ${todayPnl >= 0 ? 'val-up' : 'val-down'}`}>
+                        {todayPnl >= 0 ? '+' : ''}{todayPnl.toLocaleString()}
+                    </div>
+                    <div className={`sub-value ${todayPnl >= 0 ? 'val-up' : 'val-down'}`}>
+                        {todayPercent}
+                    </div>
+                </div>
+
+                <div className="summary-box">
+                    <div className="label">Historical P&L</div>
+                    <div className={`value ${historicalPnl >= 0 ? 'val-up' : 'val-down'}`}>
+                        {historicalPnl >= 0 ? '+' : ''}{historicalPnl.toLocaleString()}
+                    </div>
+                    <div className={`sub-value ${historicalPnl >= 0 ? 'val-up' : 'val-down'}`}>
+                        {historicalPercent}
                     </div>
                 </div>
             </div>
-            <div className="col-lg-4 col-md-6">
-                <div className="summary-card">
-                    <div className="label">Historical P&L (USD)</div>
-                    <div className={`value ${historicalPnl >= 0 ? 'value-pos' : 'value-neg'}`}>
-                        {historicalPnl >= 0 ? '+' : ''}{historicalPnl.toLocaleString()} <span className="percent">(+13.13%)</span>
-                    </div>
+
+            <div className="summary-box asset-box text-right">
+                <div className="label">Total Assets</div>
+                <div className="value">
+                    {totalAsset ? parseFloat(totalAsset).toLocaleString(undefined, { maximumFractionDigits: 8 }) : '0'}
+                    <span className="unit ms-2" style={{ fontSize: '16px', color: '#8b949e', fontWeight: 'normal' }}>{mainUnit}</span>
                 </div>
-            </div>
-            <div className="col-lg-4 col-md-12">
-                <div className="summary-card highlight">
-                    <div className="label">Total Assets</div>
-                    <div className="value">
-                        {totalAsset ? parseFloat(totalAsset).toLocaleString(undefined, { maximumFractionDigits: 8 }) : '0'}
-                        <span className="unit ms-2">{btcCoin ? 'BTC' : 'USD'}</span>
-                    </div>
-                    {usdtCoin && (
-                        <div className="sub-value text-muted small mt-1">
-                            ≈ ${parseFloat(usdtCoin.equity).toLocaleString()} USDT
-                        </div>
-                    )}
+                <div className="sub-value text-muted">
+                    ≈ ${btcCoin ? (parseFloat(btcCoin.equity) * 95000).toLocaleString() : '0'} USDT
                 </div>
             </div>
         </div>

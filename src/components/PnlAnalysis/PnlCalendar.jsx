@@ -3,10 +3,9 @@ import React from 'react';
 const PnlCalendar = ({ data }) => {
     const now = new Date();
     const currentYear = now.getFullYear();
-    const currentMonth = now.getMonth(); // 0-indexed
+    const currentMonth = now.getMonth();
     const todayDate = now.getDate();
 
-    // Create map of daily P&L from real data
     const pnlMap = {};
     data.forEach(item => {
         const d = new Date(parseInt(item.updatedTime));
@@ -16,7 +15,7 @@ const PnlCalendar = ({ data }) => {
         }
     });
 
-    const firstDayOfMonth = new Date(currentYear, currentMonth, 1).getDay();
+    const firstDay = new Date(currentYear, currentMonth, 1).getDay();
     const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
 
     const days = [];
@@ -31,23 +30,18 @@ const PnlCalendar = ({ data }) => {
     const weekdays = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 
     return (
-        <div className="pnl-calendar-container">
-            <div className="d-flex justify-content-between align-items-center mb-4">
-                <span className="fw-bold">{currentYear}-{String(currentMonth + 1).padStart(2, '0')}</span>
+        <div className="calendar-widget">
+            <div className="cal-header d-flex justify-content-between">
+                <span>{currentYear}.{String(currentMonth + 1).padStart(2, '0')}</span>
             </div>
-            <div className="pnl-calendar">
-                {weekdays.map(d => <div key={d} className="calendar-weekday">{d}</div>)}
-
-                {/* Empty slots for start of month */}
-                {[...Array(firstDayOfMonth)].map((_, i) => (
-                    <div key={`empty-${i}`} className="calendar-day empty"></div>
-                ))}
-
+            <div className="pnl-calendar-grid">
+                {weekdays.map(d => <div key={d} className="cal-weekday">{d}</div>)}
+                {[...Array(firstDay)].map((_, i) => <div key={`empty-${i}`} className="cal-day empty"></div>)}
                 {days.map(d => (
-                    <div key={d.day} className={`calendar-day ${d.isFuture ? 'future' : ''}`}>
-                        <span className="day-num">{d.day}</span>
+                    <div key={d.day} className={`cal-day ${d.isFuture ? 'future' : ''}`}>
+                        <span className="d-num">{d.day}</span>
                         {!d.isFuture && d.pnl !== undefined && (
-                            <span className={`day-pnl ${d.pnl >= 0 ? 'value-pos' : 'value-neg'}`}>
+                            <span className={`d-pnl ${d.pnl >= 0 ? 'val-up' : 'val-down'}`}>
                                 {d.pnl > 0 ? `+${d.pnl.toFixed(0)}` : d.pnl.toFixed(0)}
                             </span>
                         )}

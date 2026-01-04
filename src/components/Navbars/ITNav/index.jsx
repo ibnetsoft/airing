@@ -29,9 +29,11 @@ const Navbar = () => {
   return (
     <nav className="navbar navbar-expand-lg navbar-dark style-2 position-absolute w-100 p-0" ref={navbarRef}>
       <div className="container">
-        <a className="navbar-brand" href="#">
-          <img src="/assets/img/logo_ll.png" alt="" />
-        </a>
+        <Link href="/">
+          <a className="navbar-brand">
+            <img src="/assets/img/logo_ll.png" alt="" />
+          </a>
+        </Link>
         <button className="navbar-toggler" type="button" data-bs-toggle="collapse"
           data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
           aria-label="Toggle navigation">

@@ -35,7 +35,12 @@ const Dashboard = () => {
         fetchData();
     }, [timeRange]);
 
-    if (loading) return <div className="text-center py-5">Loading Dashboard...</div>;
+    if (loading) return (
+        <div className="text-center py-5" style={{ color: '#8b949e' }}>
+            <div className="spinner-border text-info mb-3"></div>
+            <div>Syncing with Bybit...</div>
+        </div>
+    );
 
     const calculateMetrics = () => {
         let total = 0;
@@ -65,16 +70,18 @@ const Dashboard = () => {
                     walletCoins={wallet?.coin || []}
                 />
 
-                <div className="time-filters">
-                    {[7, 30, 60, 90, 180].map(days => (
-                        <button
-                            key={days}
-                            className={`time-filter-btn ${timeRange === days ? 'active' : ''}`}
-                            onClick={() => setTimeRange(days)}
-                        >
-                            Last {days} D
-                        </button>
-                    ))}
+                <div className="pnl-controls">
+                    <div className="filter-pills">
+                        {[7, 30, 60, 90, 180].map(days => (
+                            <button
+                                key={days}
+                                className={`filter-pill ${timeRange === days ? 'active' : ''}`}
+                                onClick={() => setTimeRange(days)}
+                            >
+                                {days}D
+                            </button>
+                        ))}
+                    </div>
                 </div>
 
                 <div className="pnl-grid">
@@ -90,10 +97,12 @@ const Dashboard = () => {
                         dataKey="pnlPercent"
                         color="#23d160"
                     />
-                    <div className="pnl-card">
-                        <h5>Daily P&L (USD)</h5>
+
+                    <div className="pnl-glass-card">
+                        <div className="card-title">Daily Performance</div>
                         <PnlCalendar data={pnlData} />
                     </div>
+
                     <PnlChartCard
                         title="Total Asset Trend (USD)"
                         data={pnlData}

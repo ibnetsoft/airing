@@ -54,21 +54,26 @@ const authenticatedFetch = async (endpoint, params = {}) => {
 };
 
 /**
- * Get Closed PnL history with proper startTime calculation
+ * Get Closed PnL history
  */
 export const getClosedPnl = async (timeRangeDays = 30) => {
   if (isMock) return getMockPnlData({ limit: timeRangeDays });
 
-  const now = Date.now();
-  const startTime = now - (timeRangeDays * 24 * 60 * 60 * 1000);
-
-  // Bybit V5 closed-pnl supports limit up to 100 per page. 
-  // For longer ranges, pagination would be needed, but we'll start with 100.
-  return authenticatedFetch('/v5/position/closed-pnl', {
+  const params = {
     category: 'linear',
-    startTime,
     limit: 100
-  });
+  };
+
+  // If timeRangeDays is provided, calculate startTime
+  // However, to ensure we always show "something" initially, 
+  // we might want to fetch without startTime if the account is sparse.
+  // For now, let's keep it but handle the empty result more gracefully in UI.
+  if (timeRangeDays && timeRangeDays !== 'all') {
+    const now = Date.now();
+    params.startTime = now - (timeRangeDays * 24 * 60 * 60 * 1000);
+  }
+
+  return authenticatedFetch('/v5/position/closed-pnl', params);
 };
 
 /**

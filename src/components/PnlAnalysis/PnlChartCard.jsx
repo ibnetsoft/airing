@@ -13,25 +13,18 @@ const PnlChartCard = ({ title, data, dataKey, color }) => {
 
             const processed = processPnlForCharts(data);
 
-            if (processed.length === 0) {
-                return;
-            }
+            if (processed.length === 0) return;
 
             const ctx = chartRef.current.getContext('2d');
             const labels = processed.map(item => item.date);
             const values = processed.map(item => {
-                if (dataKey === 'pnlPercent') {
-                    // Semi-mocked ROI calculation for visualization
-                    return (parseFloat(item.closedPnl) / 10).toFixed(2);
-                }
-                if (dataKey === 'assetTrend') {
-                    return parseFloat(item.cumulativePnl);
-                }
+                if (dataKey === 'pnlPercent') return (parseFloat(item.closedPnl) / 10).toFixed(2);
+                if (dataKey === 'assetTrend') return parseFloat(item.cumulativePnl);
                 return parseFloat(item[dataKey]);
             });
 
             const gradient = ctx.createLinearGradient(0, 0, 0, 300);
-            gradient.addColorStop(0, `${color}40`);
+            gradient.addColorStop(0, `${color}30`);
             gradient.addColorStop(1, `${color}00`);
 
             chartInstance.current = new window.Chart(ctx, {
@@ -52,34 +45,27 @@ const PnlChartCard = ({ title, data, dataKey, color }) => {
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    interaction: {
-                        intersect: false,
-                        mode: 'index',
-                    },
+                    interaction: { intersect: false, mode: 'index' },
                     plugins: {
                         legend: { display: false },
                         tooltip: {
-                            backgroundColor: '#161b22',
+                            backgroundColor: '#1c2128',
                             titleColor: '#8b949e',
                             bodyColor: '#fff',
                             borderColor: '#30363d',
                             borderWidth: 1,
-                            padding: 10,
+                            padding: 12,
                             displayColors: false
                         }
                     },
                     scales: {
                         x: {
                             grid: { display: false },
-                            ticks: { color: '#8b949e', maxTicksLimit: 7, font: { size: 10 } }
+                            ticks: { color: '#8b949e', maxTicksLimit: 6, font: { size: 10 } }
                         },
                         y: {
-                            grid: { color: 'rgba(48, 54, 61, 0.2)', drawBorder: false },
-                            ticks: {
-                                color: '#8b949e',
-                                font: { size: 10 },
-                                callback: (val) => val.toLocaleString()
-                            }
+                            grid: { color: 'rgba(48, 54, 61, 0.3)', drawBorder: false },
+                            ticks: { color: '#8b949e', font: { size: 10 } }
                         }
                     }
                 }
@@ -88,9 +74,9 @@ const PnlChartCard = ({ title, data, dataKey, color }) => {
     }, [data, dataKey, title, color]);
 
     return (
-        <div className="pnl-card">
-            <h6 className="mb-4 text-white-50 fw-normal" style={{ fontSize: '14px' }}>{title}</h6>
-            <div className="pnl-chart-container">
+        <div className="pnl-glass-card">
+            <div className="card-title">{title}</div>
+            <div className="pnl-chart-wrapper">
                 {data.length === 0 ? (
                     <div className="d-flex align-items-center justify-content-center h-100 text-muted small">
                         No data available for this period
