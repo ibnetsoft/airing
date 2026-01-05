@@ -59,7 +59,7 @@ const authenticatedFetch = async (endpoint, params = {}) => {
 export const getClosedPnl = async (timeRangeDays = 30) => {
   if (isMock) return getMockPnlData({ limit: timeRangeDays });
 
-  const categories = ['linear', 'inverse'];
+  const categories = ['linear', 'inverse', 'option'];
   let allResults = [];
   const now = Date.now();
   const startTime = (timeRangeDays === 'all' || !timeRangeDays) ? undefined : now - (timeRangeDays * 24 * 60 * 60 * 1000);
@@ -67,8 +67,8 @@ export const getClosedPnl = async (timeRangeDays = 30) => {
   const fetchCategory = async (category, start) => {
     let categoryResults = [];
     let cursor = '';
-    // Fetch up to 3 pages per category
-    for (let i = 0; i < 3; i++) {
+    // Fetch up to 10 pages per category (1000 items)
+    for (let i = 0; i < 10; i++) {
       const params = { category, limit: 100, cursor };
       if (start) params.startTime = start;
       const res = await authenticatedFetch('/v5/position/closed-pnl', params);
@@ -121,7 +121,10 @@ export const getWalletBalance = async () => {
 
     validResults.forEach(res => {
       const item = res.result.list[0];
-      if (item.coin) allCoins.push(...item.coin);
+      if (item.coin) {
+        allCoins.push(...item.coin);
+        console.log(`Detected Coins in ${res.result.list[0].accountType || 'Account'}:`, item.coin.map(c => c.coin).join(', '));
+      }
       bestTotalEquity = Math.max(bestTotalEquity, parseFloat(item.totalEquity || item.totalWalletBalance || 0));
     });
 

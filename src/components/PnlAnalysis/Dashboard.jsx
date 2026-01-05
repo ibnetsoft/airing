@@ -24,6 +24,13 @@ const Dashboard = () => {
                     getWalletBalance()
                 ]);
 
+                // DIAGNOSTIC CORE: Fetch open positions and executions to see why closed-pnl is empty
+                const diagPositions = await authenticatedFetch('/v5/position/list', { category: 'linear' });
+                const diagExecutions = await authenticatedFetch('/v5/execution/list', { category: 'linear', limit: 10 });
+                console.log("DIAGNOSTIC - Open Positions (Linear):", diagPositions?.result?.list?.length || 0, "found");
+                console.log("DIAGNOSTIC - Recent Executions (Linear):", diagExecutions?.result?.list?.length || 0, "found");
+                if (diagExecutions?.result?.list) console.log("Recent Coins Traded:", [...new Set(diagExecutions.result.list.map(e => e.symbol))].join(', '));
+
                 if (pnlRes.retCode === 0) {
                     console.log("Bybit P&L Data Received:", pnlRes.result.list?.length || 0, "items");
                     setPnlData(pnlRes.result.list || []);
