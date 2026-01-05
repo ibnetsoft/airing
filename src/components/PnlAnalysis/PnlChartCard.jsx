@@ -54,7 +54,9 @@ const PnlChartCard = ({ title, data, dataKey, color }) => {
                                     let label = context.dataset.label || '';
                                     if (label) label += ': ';
                                     if (dataKey === 'pnlPercent') return label + context.parsed.y + '%';
-                                    return label + context.parsed.y.toLocaleString();
+                                    const rawVal = context.parsed.y;
+                                    const decimals = Math.abs(rawVal) < 1 && rawVal !== 0 ? 6 : 2;
+                                    return label + rawVal.toLocaleString(undefined, { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
                                 }
                             }
                         }
@@ -71,7 +73,8 @@ const PnlChartCard = ({ title, data, dataKey, color }) => {
                                 font: { size: 10 },
                                 callback: (val) => {
                                     if (dataKey === 'pnlPercent') return val + '%';
-                                    return val.toLocaleString();
+                                    const decimals = Math.abs(val) < 1 && val !== 0 ? 4 : 0;
+                                    return val.toLocaleString(undefined, { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
                                 }
                             }
                         }

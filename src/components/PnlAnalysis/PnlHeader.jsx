@@ -1,27 +1,40 @@
 import React from 'react';
 
 const PnlHeader = ({ todayPnl, historicalPnl, totalAsset, walletCoins }) => {
-    // Determine primary asset unit
+    // Determine primary asset unit and value
+    // If totalAsset is extremely small but we have coins, we might be misreading the account type
     const btcCoin = walletCoins?.find(c => c.coin === 'BTC');
-    const mainUnit = btcCoin && parseFloat(btcCoin.equity) > 0 ? 'BTC' : 'USD';
+    const usdtCoin = walletCoins?.find(c => c.coin === 'USDT');
 
-    // Calculate real percentages based on total historical P&L and current balance
-    // Starting Balance = Current Total - Period P&L
-    const currentTotal = parseFloat(totalAsset) || 0;
+    // Find the coin with the largest equity to determine main unit if totalAsset is 0
+    let primaryCoin = walletCoins?.sort((a, b) => parseFloat(b.equity) - parseFloat(a.equity))[0];
+    const mainUnit = primaryCoin && parseFloat(primaryCoin.equity) > 0 ? primaryCoin.coin : 'USD';
+
+    // If totalAsset is 0 or very small, and we have a primary coin, use that value instead
+    const displayEquity = (parseFloat(totalAsset) < 0.01 && primaryCoin) ? parseFloat(primaryCoin.equity) : totalAsset;
+
+    // Calculate real percentages
+    const currentTotal = parseFloat(displayEquity) || 0;
     const startingHistorical = currentTotal - historicalPnl;
     const historicalPercent = startingHistorical > 0 ? (historicalPnl / startingHistorical) * 100 : 0;
 
-    // For "Today", we compare today's P&L to the balance at the start of today
     const startingToday = currentTotal - todayPnl;
     const todayPercent = startingToday > 0 ? (todayPnl / startingToday) * 100 : 0;
+
+    // Helper to format values based on unit importance
+    const formatAmount = (val) => {
+        const absVal = Math.abs(val);
+        const decimals = (mainUnit === 'BTC' || absVal < 1) ? 6 : 2;
+        return val.toLocaleString(undefined, { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+    };
 
     return (
         <div className="pnl-summary-banner">
             <div className="summary-group">
                 <div className="summary-box">
-                    <div className="label">Today's P&L(USD)</div>
+                    <div className="label">Today's P&L({mainUnit})</div>
                     <div className={`value ${todayPnl >= 0 ? 'val-up' : 'val-down'}`}>
-                        {todayPnl >= 0 ? '+' : ''}{todayPnl.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        {todayPnl >= 0 ? '+' : ''}{formatAmount(todayPnl)}
                     </div>
                     <div className={`sub-value ${todayPnl >= 0 ? 'val-up' : 'val-down'}`}>
                         {todayPnl >= 0 ? '+' : ''}{todayPercent.toFixed(2)}%
@@ -29,9 +42,9 @@ const PnlHeader = ({ todayPnl, historicalPnl, totalAsset, walletCoins }) => {
                 </div>
 
                 <div className="summary-box">
-                    <div className="label">Historical P&L(USD)</div>
+                    <div className="label">Historical P&L({mainUnit})</div>
                     <div className={`value ${historicalPnl >= 0 ? 'val-up' : 'val-down'}`}>
-                        {historicalPnl >= 0 ? '+' : ''}{historicalPnl.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        {historicalPnl >= 0 ? '+' : ''}{formatAmount(historicalPnl)}
                     </div>
                     <div className={`sub-value ${historicalPnl >= 0 ? 'val-up' : 'val-down'}`}>
                         {historicalPnl >= 0 ? '+' : ''}{historicalPercent.toFixed(2)}%
@@ -42,7 +55,7 @@ const PnlHeader = ({ todayPnl, historicalPnl, totalAsset, walletCoins }) => {
             <div className="summary-box asset-box text-right">
                 <div className="label">Current Equity</div>
                 <div className="value">
-                    {totalAsset ? parseFloat(totalAsset).toLocaleString(undefined, { maximumFractionDigits: 8 }) : '0'}
+                    {displayEquity ? parseFloat(displayEquity).toLocaleString(undefined, { maximumFractionDigits: 8 }) : '0'}
                     <span className="unit ms-2" style={{ fontSize: '16px', color: '#8b949e', fontWeight: 'normal' }}>{mainUnit}</span>
                 </div>
                 <div className="sub-value text-muted">

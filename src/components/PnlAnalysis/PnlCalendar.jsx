@@ -40,9 +40,12 @@ const PnlCalendar = ({ data }) => {
         setViewDate(newDate);
     };
 
-    const monthNames = ["January", "February", "March", "April", "May", "June",
-        "July", "August", "September", "October", "November", "December"
-    ];
+    const formatPnl = (val) => {
+        if (val === undefined || val === null) return '';
+        const absVal = Math.abs(val);
+        const decimals = absVal < 1 && absVal !== 0 ? 4 : 0;
+        return val > 0 ? `+${val.toFixed(decimals)}` : val.toFixed(decimals);
+    };
 
     return (
         <div className="calendar-widget">
@@ -77,7 +80,7 @@ const PnlCalendar = ({ data }) => {
                         <span className="d-num">{d.day}</span>
                         {!d.isFuture && d.pnl !== undefined && (
                             <span className={`d-pnl ${d.pnl >= 0 ? 'val-up' : 'val-down'}`}>
-                                {d.pnl > 0 ? `+${d.pnl.toFixed(0)}` : d.pnl.toFixed(0)}
+                                {formatPnl(d.pnl)}
                             </span>
                         )}
                         {!d.isFuture && d.pnl === undefined && Object.keys(pnlMap).length > 0 && (

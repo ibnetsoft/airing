@@ -24,7 +24,13 @@ const Dashboard = () => {
                 }
 
                 if (walletRes.retCode === 0 && walletRes.result.list && walletRes.result.list.length > 0) {
-                    setWallet(walletRes.result.list[0]);
+                    const walletData = walletRes.result.list[0];
+                    console.log("Bybit Wallet Data:", walletData);
+                    // Ensure we have a totalEquity field, fallback to totalWalletBalance if needed
+                    if (!walletData.totalEquity && walletData.totalWalletBalance) {
+                        walletData.totalEquity = walletData.totalWalletBalance;
+                    }
+                    setWallet(walletData);
                 }
             } catch (error) {
                 console.error("Failed to fetch dashboard data", error);
