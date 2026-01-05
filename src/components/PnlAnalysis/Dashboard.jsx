@@ -9,6 +9,11 @@ const Dashboard = () => {
     const [pnlData, setPnlData] = useState([]);
     const [wallet, setWallet] = useState(null);
     const [timeRange, setTimeRange] = useState(30);
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -93,7 +98,7 @@ const Dashboard = () => {
                     </div>
                     <div className="ms-auto d-flex align-items-center">
                         <span className="badge rounded-pill bg-success me-2" style={{ padding: '6px 12px', fontSize: '11px', opacity: 0.8 }}>● Live API</span>
-                        <span className="text-muted small">Updated {new Date().toLocaleTimeString()}</span>
+                        {mounted && <span className="text-muted small">Updated {new Date().toLocaleTimeString()}</span>}
                     </div>
                 </div>
 

@@ -40,6 +40,10 @@ const PnlCalendar = ({ data }) => {
         setViewDate(newDate);
     };
 
+    const monthNames = ["January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"
+    ];
+
     const formatPnl = (val) => {
         if (val === undefined || val === null) return '';
         const absVal = Math.abs(val);

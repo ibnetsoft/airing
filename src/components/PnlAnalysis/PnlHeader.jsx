@@ -7,11 +7,13 @@ const PnlHeader = ({ todayPnl, historicalPnl, totalAsset, walletCoins }) => {
     const usdtCoin = walletCoins?.find(c => c.coin === 'USDT');
 
     // Find the coin with the largest equity to determine main unit if totalAsset is 0
-    let primaryCoin = walletCoins?.sort((a, b) => parseFloat(b.equity) - parseFloat(a.equity))[0];
+    // Fix: Clone walletCoins before sorting to avoid mutating props
+    let primaryCoin = walletCoins ? [...walletCoins].sort((a, b) => parseFloat(b.equity) - parseFloat(a.equity))[0] : null;
     const mainUnit = primaryCoin && parseFloat(primaryCoin.equity) > 0 ? primaryCoin.coin : 'USD';
 
     // If totalAsset is 0 or very small, and we have a primary coin, use that value instead
-    const displayEquity = (parseFloat(totalAsset) < 0.01 && primaryCoin) ? parseFloat(primaryCoin.equity) : totalAsset;
+    const totalAssetVal = parseFloat(totalAsset) || 0;
+    const displayEquity = (totalAssetVal < 0.01 && primaryCoin) ? parseFloat(primaryCoin.equity) : totalAssetVal;
 
     // Calculate real percentages
     const currentTotal = parseFloat(displayEquity) || 0;
