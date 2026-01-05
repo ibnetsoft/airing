@@ -6,14 +6,22 @@ const PnlHeader = ({ todayPnl, historicalPnl, totalAsset, walletCoins }) => {
     const btcCoin = walletCoins?.find(c => c.coin === 'BTC');
     const usdtCoin = walletCoins?.find(c => c.coin === 'USDT');
 
-    // Find the coin with the largest equity to determine main unit if totalAsset is 0
-    // Fix: Clone walletCoins before sorting to avoid mutating props
-    let primaryCoin = walletCoins ? [...walletCoins].sort((a, b) => parseFloat(b.equity) - parseFloat(a.equity))[0] : null;
-    const mainUnit = primaryCoin && parseFloat(primaryCoin.equity) > 0 ? primaryCoin.coin : 'USD';
+    // Find the coin with the largest balance to determine main unit
+    // Robust check for various Bybit coin fields (equity, walletBalance, etc.)
+    let primaryCoin = walletCoins && walletCoins.length > 0
+        ? [...walletCoins].sort((a, b) => {
+            const valA = parseFloat(a.equity || a.walletBalance || 0);
+            const valB = parseFloat(b.equity || b.walletBalance || 0);
+            return valB - valA;
+        })[0]
+        : null;
+
+    const primaryCoinVal = primaryCoin ? parseFloat(primaryCoin.equity || primaryCoin.walletBalance || 0) : 0;
+    const mainUnit = primaryCoinVal > 0 ? primaryCoin.coin : 'USD';
 
     // If totalAsset is 0 or very small, and we have a primary coin, use that value instead
     const totalAssetVal = parseFloat(totalAsset) || 0;
-    const displayEquity = (totalAssetVal < 0.01 && primaryCoin) ? parseFloat(primaryCoin.equity) : totalAssetVal;
+    const displayEquity = (totalAssetVal < 0.01 && primaryCoinVal > 0) ? primaryCoinVal : totalAssetVal;
 
     // Calculate real percentages
     const currentTotal = parseFloat(displayEquity) || 0;

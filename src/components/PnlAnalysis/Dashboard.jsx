@@ -25,17 +25,22 @@ const Dashboard = () => {
                 ]);
 
                 if (pnlRes.retCode === 0) {
+                    console.log("Bybit P&L Data Received:", pnlRes.result.list?.length || 0, "items");
                     setPnlData(pnlRes.result.list || []);
+                } else {
+                    console.warn("Bybit P&L API Error:", pnlRes.retMsg);
                 }
 
                 if (walletRes.retCode === 0 && walletRes.result.list && walletRes.result.list.length > 0) {
                     const walletData = walletRes.result.list[0];
-                    console.log("Bybit Wallet Data:", walletData);
-                    // Ensure we have a totalEquity field, fallback to totalWalletBalance if needed
-                    if (!walletData.totalEquity && walletData.totalWalletBalance) {
-                        walletData.totalEquity = walletData.totalWalletBalance;
+                    console.log("Bybit Wallet Data Raw:", walletData);
+                    // Ensure we have a totalEquity field, fallback to other balance fields for standard accounts
+                    if (!walletData.totalEquity) {
+                        walletData.totalEquity = walletData.totalWalletBalance || walletData.totalMarginBalance || "0";
                     }
                     setWallet(walletData);
+                } else {
+                    console.warn("Bybit Wallet API Error:", walletRes?.retMsg);
                 }
             } catch (error) {
                 console.error("Failed to fetch dashboard data", error);
