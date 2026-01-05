@@ -48,12 +48,13 @@ const Dashboard = () => {
         let total = 0;
         let today = 0;
         const now = new Date();
-        const todayStr = now.toDateString();
+        const todayUTC = now.toISOString().split('T')[0];
 
         pnlData.forEach(item => {
             const pnl = parseFloat(item.closedPnl);
             total += pnl;
-            if (new Date(parseInt(item.updatedTime)).toDateString() === todayStr) {
+            const itemDate = new Date(parseInt(item.updatedTime)).toISOString().split('T')[0];
+            if (itemDate === todayUTC) {
                 today += pnl;
             }
         });

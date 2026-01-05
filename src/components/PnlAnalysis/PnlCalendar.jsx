@@ -14,8 +14,9 @@ const PnlCalendar = ({ data }) => {
     const pnlMap = {};
     data.forEach(item => {
         const d = new Date(parseInt(item.updatedTime));
-        if (d.getFullYear() === currentYear && d.getMonth() === currentMonth) {
-            const day = d.getDate();
+        // Use UTC to match Bybit's daily reports
+        if (d.getUTCFullYear() === currentYear && d.getUTCMonth() === currentMonth) {
+            const day = d.getUTCDate();
             pnlMap[day] = (pnlMap[day] || 0) + parseFloat(item.closedPnl);
         }
     });

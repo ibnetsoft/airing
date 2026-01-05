@@ -54,26 +54,38 @@ const authenticatedFetch = async (endpoint, params = {}) => {
 };
 
 /**
- * Get Closed PnL history
+ * Get Closed PnL history with pagination
  */
 export const getClosedPnl = async (timeRangeDays = 30) => {
   if (isMock) return getMockPnlData({ limit: timeRangeDays });
 
-  const params = {
-    category: 'linear',
-    limit: 100
-  };
+  let allResults = [];
+  let cursor = '';
 
-  // If timeRangeDays is provided, calculate startTime
-  // However, to ensure we always show "something" initially, 
-  // we might want to fetch without startTime if the account is sparse.
-  // For now, let's keep it but handle the empty result more gracefully in UI.
-  if (timeRangeDays && timeRangeDays !== 'all') {
-    const now = Date.now();
-    params.startTime = now - (timeRangeDays * 24 * 60 * 60 * 1000);
+  const now = Date.now();
+  const startTime = timeRangeDays === 'all' ? undefined : now - (timeRangeDays * 24 * 60 * 60 * 1000);
+
+  // Fetch up to 5 pages (500 items) for better coverage of active accounts
+  for (let i = 0; i < 5; i++) {
+    const params = {
+      category: 'linear',
+      limit: 100,
+      cursor
+    };
+    if (startTime) params.startTime = startTime;
+
+    const res = await authenticatedFetch('/v5/position/closed-pnl', params);
+
+    if (res.retCode === 0 && res.result.list && res.result.list.length > 0) {
+      allResults = [...allResults, ...res.result.list];
+      cursor = res.result.nextPageCursor;
+      if (!cursor) break;
+    } else {
+      break;
+    }
   }
 
-  return authenticatedFetch('/v5/position/closed-pnl', params);
+  return { retCode: 0, result: { list: allResults } };
 };
 
 /**
@@ -86,38 +98,54 @@ export const getWalletBalance = async () => {
 
 /**
  * Helper to process P&L data for charts with real mathematical derivation
+ * Aggregates by UTC Date to match Bybit app's behavior
  */
 export const processPnlForCharts = (list, currentEquity = 0) => {
   if (!list || list.length === 0) return [];
 
-  // Sort list chronologically (oldest first)
-  const sortedList = [...list].sort((a, b) => parseInt(a.updatedTime) - parseInt(b.updatedTime));
+  // Group by UTC date (YYYY-MM-DD)
+  const dailyGroups = {};
+  list.forEach(item => {
+    const dateObj = new Date(parseInt(item.updatedTime));
+    const utcDate = dateObj.toISOString().split('T')[0]; // Format: YYYY-MM-DD
+
+    if (!dailyGroups[utcDate]) {
+      dailyGroups[utcDate] = {
+        totalPnl: 0,
+        lastUpdatedTime: 0
+      };
+    }
+
+    dailyGroups[utcDate].totalPnl += parseFloat(item.closedPnl);
+    dailyGroups[utcDate].lastUpdatedTime = Math.max(dailyGroups[utcDate].lastUpdatedTime, parseInt(item.updatedTime));
+  });
+
+  // Convert to array and sort chronologically
+  const sortedDays = Object.keys(dailyGroups)
+    .sort()
+    .map(date => ({
+      date,
+      closedPnl: dailyGroups[date].totalPnl,
+      updatedTime: dailyGroups[date].lastUpdatedTime
+    }));
 
   // 1. Calculate Cumulative P&L at each point
   let cumulativePnl = 0;
-  const dataWithPnl = sortedList.map(item => {
-    const pnl = parseFloat(item.closedPnl);
-    cumulativePnl += pnl;
+  const dataWithPnl = sortedDays.map(item => {
+    cumulativePnl += item.closedPnl;
     return {
       ...item,
-      pnlValue: pnl,
       cumulativePnl: cumulativePnl,
-      date: new Date(parseInt(item.updatedTime)).toLocaleDateString()
     };
   });
 
   // 2. Derive Equity Baseline
-  // Starting Equity = Current Equity - Total P&L of the fetched period
   const totalPnlInPeriod = cumulativePnl;
   const startingEquity = (parseFloat(currentEquity) || 0) - totalPnlInPeriod;
 
   // 3. Final processing with ROI and Asset Trend
   return dataWithPnl.map(item => {
-    // Equity at this point = startingEquity + cumulativePnl up to this point
     const pointEquity = startingEquity + item.cumulativePnl;
-
-    // Calculate ROI % relative to the starting equity of the period
-    // Safely handle division by zero or very small equity
     const roiPercent = startingEquity > 0 ? (item.cumulativePnl / startingEquity) * 100 : 0;
 
     return {

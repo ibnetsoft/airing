@@ -19,10 +19,9 @@ const PnlHeader = ({ todayPnl, historicalPnl, totalAsset, walletCoins }) => {
         <div className="pnl-summary-banner">
             <div className="summary-group">
                 <div className="summary-box">
-                    <div className="label">Today's P&L</div>
+                    <div className="label">Today's P&L(USD)</div>
                     <div className={`value ${todayPnl >= 0 ? 'val-up' : 'val-down'}`}>
-                        {todayPnl >= 0 ? '+' : ''}{todayPnl.toLocaleString()}
-                        <span style={{ fontSize: '14px', marginLeft: '8px' }}>USD</span>
+                        {todayPnl >= 0 ? '+' : ''}{todayPnl.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </div>
                     <div className={`sub-value ${todayPnl >= 0 ? 'val-up' : 'val-down'}`}>
                         {todayPnl >= 0 ? '+' : ''}{todayPercent.toFixed(2)}%
@@ -30,10 +29,9 @@ const PnlHeader = ({ todayPnl, historicalPnl, totalAsset, walletCoins }) => {
                 </div>
 
                 <div className="summary-box">
-                    <div className="label">Historical P&L (Period)</div>
+                    <div className="label">Historical P&L(USD)</div>
                     <div className={`value ${historicalPnl >= 0 ? 'val-up' : 'val-down'}`}>
-                        {historicalPnl >= 0 ? '+' : ''}{historicalPnl.toLocaleString()}
-                        <span style={{ fontSize: '14px', marginLeft: '8px' }}>USD</span>
+                        {historicalPnl >= 0 ? '+' : ''}{historicalPnl.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </div>
                     <div className={`sub-value ${historicalPnl >= 0 ? 'val-up' : 'val-down'}`}>
                         {historicalPnl >= 0 ? '+' : ''}{historicalPercent.toFixed(2)}%
