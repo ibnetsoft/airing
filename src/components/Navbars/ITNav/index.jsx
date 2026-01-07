@@ -49,7 +49,7 @@ const Navbar = () => {
               </Link>
             </li>
             <li className="nav-item">
-              <Link href="https://chart.airing.work">
+              <Link href="https://chart.airing.work/menu/home">
                 <a className="nav-link" target="_blank" rel="noopener noreferrer">
                   chart
                 </a>
