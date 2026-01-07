@@ -43,12 +43,16 @@ const Navbar = () => {
           <ul className="navbar-nav m-auto mb-2 mb-lg-0 text-uppercase">
             <li className="nav-item">
               <Link href="/">
-                <a className="nav-link">Home</a>
+                <a className="nav-link">
+                  Home
+                </a>
               </Link>
             </li>
             <li className="nav-item">
-              <Link href="/page-pnl-analysis">
-                <a className="nav-link">P&L Analysis</a>
+              <Link href="https://chart.airing.work">
+                <a className="nav-link" target="_blank" rel="noopener noreferrer">
+                  chart
+                </a>
               </Link>
             </li>
           </ul>
