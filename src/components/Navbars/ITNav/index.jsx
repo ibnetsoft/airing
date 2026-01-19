@@ -55,6 +55,13 @@ const Navbar = () => {
                 </a>
               </Link>
             </li>
+            <li className="nav-item">
+              <Link href="https://wallet.airing.work/">
+                <a className="nav-link" target="_blank" rel="noopener noreferrer">
+                  WALLET
+                </a>
+              </Link>
+            </li>
           </ul>
         </div>
       </div>
